@@ -1,0 +1,15 @@
+services:
+  db:
+    image: postgres:17
+    restart: always
+    environment:
+      POSTGRES_DB: audiary_db
+      POSTGRES_USER: audiary_user
+      POSTGRES_PASSWORD: audiary_password
+    ports:
+      - "5434:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
