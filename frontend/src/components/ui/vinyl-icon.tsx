@@ -92,6 +92,7 @@ const VinylIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
         className={`cursor-pointer ${className}`}
         onHoverStart={start}
         onHoverEnd={stop}
+        onTapStart={start}
       >
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
 

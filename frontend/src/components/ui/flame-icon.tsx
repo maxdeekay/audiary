@@ -52,6 +52,7 @@ const FlameIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
         style={{ overflow: "visible" }}
         onHoverStart={start}
         onHoverEnd={stop}
+        onTapStart={start}
       >
         <motion.g
           className="flame-group"
