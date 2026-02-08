@@ -11,7 +11,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { loginSchema, type LoginRequest } from "@/lib/schemas";
-import { login } from "@/api/auth";
+import { register } from "@/api/auth";
 import { ApiError } from "@/api/client";
 
 export default function SignUpForm() {
@@ -26,7 +26,7 @@ export default function SignUpForm() {
 
   async function onSubmit(data: LoginRequest) {
     try {
-      await login(data);
+      await register(data);
       navigate("/");
     } catch (error) {
       if (error instanceof ApiError) {

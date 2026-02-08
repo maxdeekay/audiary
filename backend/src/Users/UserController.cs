@@ -6,26 +6,20 @@ namespace Users.Controllers;
 [ApiController]
 [Authorize]
 [Route("api/[controller]s")]
-public class UserController : ControllerBase
+public class UserController(IUserService userService) : ControllerBase
 {
-    // public readonly string _jwtSecret;
 
-    public UserController()
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<AuthResponse> Create(AuthRequest request)
     {
-
+        return await userService.Create(request);
     }
 
-    [HttpPost]
+    [HttpPost("login")]
     [AllowAnonymous]
-    public async Task<ActionResult> CreateUser()
+    public async Task<AuthResponse> Login(AuthRequest request)
     {
-        return Ok();
-    }
-
-    [HttpPost("/api/login")]
-    [AllowAnonymous]
-    public async Task<ActionResult> Login()
-    {
-        return Ok();
+        return await userService.Login(request);
     }
 }

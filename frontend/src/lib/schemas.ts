@@ -26,12 +26,12 @@ export const registerSchema = z.object({
 
 export type RegisterRequest = z.infer<typeof registerSchema>;
 
-export const loginResponseSchema = z.object({
+export const authResponseSchema = z.object({
   token: z.string(),
   user: z.object({
-    id: z.string(),
+    id: z.int(),
     username: z.string(),
   }),
 });
 
-export type LoginResponse = z.infer<typeof loginResponseSchema>;
+export type AuthResponse = z.infer<typeof authResponseSchema>;
