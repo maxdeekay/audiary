@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import {
   Field,
   FieldError,
@@ -99,8 +100,16 @@ export default function SignUpForm() {
           </p>
         )}
 
-        <Button type="submit" className="w-full mt-10 cursor-pointer">
-          Sign up
+        <Button
+          type="submit"
+          className="w-full mt-10 cursor-pointer"
+          disabled={form.formState.isSubmitting}
+        >
+          {form.formState.isSubmitting ? (
+            <Spinner data-icon="inline-start" />
+          ) : (
+            "Sign up"
+          )}
         </Button>
       </form>
     </div>

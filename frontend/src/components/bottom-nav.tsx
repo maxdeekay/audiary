@@ -21,7 +21,7 @@ export default function BottomNav() {
           <Link
             key={to}
             to={to}
-            className={`flex flex-col items-center ${pathname == to ? "text-foreground" : "text-muted-foreground"}`}
+            className={`flex flex-col items-center ${pathname == to ? "text-primary" : "text-muted-foreground"}`}
             aria-label={label}
           >
             <Icon className="size-7" />

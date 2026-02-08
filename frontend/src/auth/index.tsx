@@ -2,8 +2,7 @@ import { useState } from "react";
 import LoginForm from "./login-form";
 import SignUpForm from "./sign-up-form";
 import { isAuthenticated } from "@/lib/auth";
-import { Navigate } from "react-router-dom";
-import { useSearchParams } from "react-router-dom";
+import { Navigate, useSearchParams } from "react-router-dom";
 
 export default function Auth() {
   const [currentForm, setCurrentForm] = useState<"login" | "sign-up">("login");
