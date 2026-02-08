@@ -3,7 +3,7 @@ import BottomNav from "./bottom-nav";
 
 export default function Layout() {
   return (
-    <div className="min-h-screen px-2 pb-16">
+    <div className="min-h-screen px-2 pb-24">
       <Outlet />
       <BottomNav />
     </div>

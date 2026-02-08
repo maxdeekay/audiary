@@ -2,7 +2,7 @@ import { Heart } from "lucide-react";
 
 export default function Profile() {
   return (
-    <div className="flex flex-col gap-5 justify-center items-center min-h-[calc(100vh-4rem)]">
+    <div className="flex flex-col gap-5 justify-center items-center min-h-[calc(100vh-6rem)]">
       <p className="text-center">
         you are an amazing person <Heart className="size-4 inline" />
       </p>

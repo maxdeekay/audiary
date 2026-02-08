@@ -72,6 +72,11 @@ const VinylIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
       );
     };
 
+    const tap = () => {
+      start();
+      setTimeout(stop, 1500);
+    };
+
     useImperativeHandle(ref, () => ({
       startAnimation: start,
       stopAnimation: stop,
@@ -92,7 +97,7 @@ const VinylIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
         className={`cursor-pointer ${className}`}
         onHoverStart={start}
         onHoverEnd={stop}
-        onTapStart={start}
+        onTapStart={tap}
       >
         <path stroke="none" d="M0 0h24v24H0z" fill="none" />
 
