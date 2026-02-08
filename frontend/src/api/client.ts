@@ -54,6 +54,11 @@ async function apiRequest<T>(options: RequestOptions): Promise<T> {
     body: body ? JSON.stringify(body) : undefined,
   });
 
+  if (response.status === 401 && token) {
+    setAccessToken(null);
+    window.location.href = "/auth?expired=true";
+  }
+
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);
     throw new ApiError(response.status, response.statusText, errorBody);
