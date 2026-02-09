@@ -1,11 +1,14 @@
 import { Outlet } from "react-router-dom";
 import BottomNav from "./bottom-nav";
+import { CollectionProvider } from "@/shelf/shelf-context";
 
 export default function Layout() {
   return (
-    <div className="min-h-screen px-2 pb-24">
-      <Outlet />
+    <CollectionProvider>
+      <div className="min-h-screen px-2 pb-22">
+        <Outlet />
+      </div>
       <BottomNav />
-    </div>
+    </CollectionProvider>
   );
 }

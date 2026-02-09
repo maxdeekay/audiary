@@ -74,7 +74,10 @@ const VinylIcon = forwardRef<AnimatedIconHandle, AnimatedIconProps>(
 
     const tap = () => {
       start();
-      setTimeout(stop, 1500);
+      setTimeout(() => {
+        animationControls.current.forEach((control) => control.stop());
+        animationControls.current = [];
+      }, 1500);
     };
 
     useImperativeHandle(ref, () => ({

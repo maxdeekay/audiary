@@ -6,7 +6,7 @@ import FlameIcon from "./ui/flame-icon";
 
 const links = [
   { to: "/", icon: HomeIcon, label: "Home" },
-  { to: "/collections", icon: VinylIcon, label: "Collections" },
+  { to: "/shelf", icon: VinylIcon, label: "Shelf" },
   { to: "/challenges", icon: FlameIcon, label: "Challenges" },
   { to: "/profile", icon: UserIcon, label: "Profile" },
 ];
@@ -16,7 +16,7 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 border-t bg-background">
-      <div className="flex justify-around mt-2 h-24">
+      <div className="flex justify-around mt-2 h-22">
         {links.map(({ to, icon: Icon, label }) => (
           <Link
             key={to}
