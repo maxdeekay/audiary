@@ -25,6 +25,10 @@ public class CollectionService(AppDbContext db) : ICollectionService
     {
         var collections = await db.Collections
             .Where(c => c.UserId == userId)
+            .Include(c => c.Albums)
+                .ThenInclude(ca => ca.Album)
+            .Include(c => c.Albums)
+                .ThenInclude(ca => ca.FavouriteSongs)
             .ToListAsync();
 
         return [.. collections.Select(CollectionMapper.ToDTO)];

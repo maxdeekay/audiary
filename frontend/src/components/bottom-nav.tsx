@@ -16,7 +16,7 @@ export default function BottomNav() {
 
   return (
     <nav className="fixed bottom-0 left-0 right-0 border-t bg-background">
-      <div className="flex justify-around mt-2 h-22">
+      <div className="flex justify-around mt-2 h-20">
         {links.map(({ to, icon: Icon, label }) => (
           <Link
             key={to}

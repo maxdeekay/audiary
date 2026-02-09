@@ -10,11 +10,24 @@ export type Collection = {
 
 export type CollectionAlbum = {
   id: number;
-  FavouriteSongs: FavouriteSong[];
+  albumId: number;
+  musicBrainzId: string;
+  title: string;
+  artist: string;
+  coverUrl?: string;
+  genre?: string;
+  releaseYear: number;
+  rating?: number;
+  position: number;
+  comment?: string;
+  favouriteSongs: FavouriteSong[];
+  addedAt: string;
 };
 
 export type FavouriteSong = {
   id: number;
+  name: string;
+  position: number;
 };
 
 export type CollectionContextType = {

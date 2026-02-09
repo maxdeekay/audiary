@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { type Collection, CollectionContext } from "./collection-types";
+import { type Collection, CollectionContext } from "./types";
 import { get } from "@/api/client";
 
 export function CollectionProvider({

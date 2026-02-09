@@ -1,5 +1,5 @@
 import { useContext } from "react";
-import { CollectionContext } from "./collection-types";
+import { CollectionContext } from "./types";
 
 export function useCollections() {
   const context = useContext(CollectionContext);

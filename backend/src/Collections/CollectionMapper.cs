@@ -19,10 +19,13 @@ public static class CollectionMapper
         return new CollectionAlbumDTO
         {
             Id = album.Id,
-            Title = album.Title,
-            Artist = album.Artist,
-            CoverUrl = album.CoverUrl,
-            ReleaseYear = album.ReleaseYear,
+            AlbumId = album.AlbumId,
+            MusicBrainzId = album.Album.MusicBrainzId,
+            Title = album.Album.Title,
+            Artist = album.Album.Artist,
+            CoverUrl = album.Album.CoverUrl,
+            Genre = album.Album.Genre,
+            ReleaseYear = album.Album.ReleaseYear,
             Rating = album.Rating,
             Position = album.Position,
             Comment = album.Comment,
@@ -49,32 +52,6 @@ public static class CollectionMapper
             Description = request.Description,
             UserId = userId,
             CreatedAt = DateTime.UtcNow,
-            Albums = [.. request.Albums.Select(ToEntity)]
-        };
-    }
-
-    public static CollectionAlbum ToEntity(CreateCollectionAlbumDTO album)
-    {
-        return new CollectionAlbum
-        {
-            Title = album.Title,
-            Artist = album.Artist,
-            CoverUrl = album.CoverUrl,
-            ReleaseYear = album.ReleaseYear,
-            Rating = album.Rating,
-            Position = album.Position,
-            Comment = album.Comment,
-            AddedAt = DateTime.UtcNow,
-            FavouriteSongs = [.. album.FavouriteSongs.Select(ToEntity)]
-        };
-    }
-
-    public static FavouriteSong ToEntity(CreateFavouriteSongDTO song)
-    {
-        return new FavouriteSong
-        {
-            Name = song.Name,
-            Position = song.Position
         };
     }
 }
