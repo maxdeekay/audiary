@@ -1,6 +1,9 @@
 using Microsoft.EntityFrameworkCore;
 using Exceptions;
-using Users;
+using Auth;
+using Data;
+
+namespace Users;
 
 public interface IUserService
 {

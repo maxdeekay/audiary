@@ -1,0 +1,79 @@
+[
+  {
+    "name": "Pop & Mainstream",
+    "subGenres": ["Pop", "Indie pop", "Synthpop", "K-pop", "Schlager"]
+  },
+  {
+    "name": "Rock",
+    "subGenres": [
+      "Rock",
+      "Hårdrock",
+      "Alternativ rock",
+      "Punk rock",
+      "Progressiv rock",
+      "Psykedelisk rock"
+    ]
+  },
+  {
+    "name": "Metal",
+    "subGenres": [
+      "Heavy metal",
+      "Death metal",
+      "Black metal",
+      "Power metal",
+      "Doom metal",
+      "Metalcore"
+    ]
+  },
+  {
+    "name": "Elektronisk musik",
+    "subGenres": [
+      "House",
+      "Techno",
+      "Trance",
+      "Drum and bass",
+      "Dubstep",
+      "Ambient"
+    ]
+  },
+  {
+    "name": "Hip hop & R&B",
+    "subGenres": ["Hip hop", "Rap", "Trap", "R&B", "Soul", "Neo-soul"]
+  },
+  {
+    "name": "Jazz & Blues",
+    "subGenres": ["Jazz", "Bebop", "Swing", "Fusion", "Blues"]
+  },
+  {
+    "name": "Folkmusik & Världsmusik",
+    "subGenres": [
+      "Folkmusik",
+      "Country",
+      "Bluegrass",
+      "Reggae",
+      "Salsa",
+      "Afrobeat"
+    ]
+  },
+  {
+    "name": "Klassiskt",
+    "subGenres": [
+      "Klassisk musik",
+      "Barock",
+      "Romantik",
+      "Opera",
+      "Kammarmusik"
+    ]
+  },
+  {
+    "name": "Övrigt / Nisch",
+    "subGenres": [
+      "Soundtrack/filmmusik",
+      "Lo-fi",
+      "Chiptune",
+      "New age",
+      "Post-rock",
+      "Experimental"
+    ]
+  }
+]

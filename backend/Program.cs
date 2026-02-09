@@ -4,6 +4,9 @@ using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Exceptions;
+using Data;
+using Auth;
+using Users;
 
 var builder = WebApplication.CreateBuilder(args);
 

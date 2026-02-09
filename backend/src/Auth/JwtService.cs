@@ -4,6 +4,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Users;
 
+namespace Auth;
+
 public interface IJwtService
 {
     string GenerateToken(User user);
