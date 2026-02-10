@@ -7,6 +7,7 @@ using Exceptions;
 using Data;
 using Auth;
 using Users;
+using Music;
 using Collections;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,6 +20,10 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddHttpClient<IMusicService, MusicService>(client =>
+{
+    client.DefaultRequestHeaders.UserAgent.ParseAdd("Audiary/1.0 (max.assermark@gmail.com)");
+});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

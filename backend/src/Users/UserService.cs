@@ -22,7 +22,8 @@ public class UserService(AppDbContext db, IJwtService jwtService) : IUserService
         var newUser = new User
         {
             Username = request.Username,
-            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password)
+            PasswordHash = BCrypt.Net.BCrypt.HashPassword(request.Password),
+            CreatedAt = DateTime.UtcNow
         };
 
         db.Users.Add(newUser);

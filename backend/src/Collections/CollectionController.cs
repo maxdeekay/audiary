@@ -25,4 +25,11 @@ public class CollectionController(ICollectionService collectionService) : Contro
         var userId = User.GetUserId();
         return await collectionService.GetAll(userId);
     }
+
+    [HttpPost("{collectionId}/albums")]
+    public async Task<CollectionDTO> AddAlbum(int collectionId, AddAlbumDTO request)
+    {
+        var userId = User.GetUserId();
+        return await collectionService.AddAlbum(collectionId, request, userId);
+    }
 }

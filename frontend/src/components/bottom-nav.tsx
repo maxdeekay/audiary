@@ -1,21 +1,21 @@
 import { Link, useLocation } from "react-router-dom";
-import HomeIcon from "./ui/home-icon";
-import UserIcon from "./ui/user-icon";
-import VinylIcon from "./ui/vinyl-icon";
-import FlameIcon from "./ui/flame-icon";
+import { House, Search, Swords, LibraryBig } from "lucide-react";
 
 const links = [
-  { to: "/", icon: HomeIcon, label: "Home" },
-  { to: "/shelf", icon: VinylIcon, label: "Shelf" },
-  { to: "/challenges", icon: FlameIcon, label: "Challenges" },
-  { to: "/profile", icon: UserIcon, label: "Profile" },
+  { to: "/", icon: House, label: "Home" },
+  { to: "/search", icon: Search, label: "Search" },
+  { to: "/shelf", icon: LibraryBig, label: "Shelf" },
+  { to: "/challenges", icon: Swords, label: "Challenges" },
 ];
 
 export default function BottomNav() {
   const { pathname } = useLocation();
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 border-t bg-background">
+    <nav
+      className="fixed bottom-0 left-0 right-0 border-t bg-background"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       <div className="flex justify-around mt-2 h-20">
         {links.map(({ to, icon: Icon, label }) => (
           <Link
