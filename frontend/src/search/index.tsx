@@ -3,11 +3,16 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { searchMusic, type MusicSearchResult } from "@/api/music";
 import AlbumCover from "./album-cover";
+import { PlusCircle } from "lucide-react";
+import CollectionPicker from "./collection-picker";
 
 export default function Search() {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<MusicSearchResult[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [selectedAlbum, setSelectedAlbum] = useState<MusicSearchResult | null>(
+    null,
+  );
 
   useEffect(() => {
     if (!query.trim()) {
@@ -21,7 +26,6 @@ export default function Search() {
       try {
         const data = await searchMusic(query.trim());
         setResults(data);
-        console.log(data);
       } finally {
         setIsLoading(false);
       }
@@ -56,7 +60,7 @@ export default function Search() {
           {results.map((result) => (
             <div
               key={result.musicBrainzId}
-              className="flex gap-3 items-center rounded-lg border p-3 hover:bg-muted transition-colors cursor-pointer"
+              className="flex gap-3 items-center rounded-lg border p-3" // hover:bg-muted transition-colors cursor-pointer
             >
               <AlbumCover src={result.coverUrl!} alt={result.title} />
               <div className="flex flex-col min-w-0">
@@ -66,10 +70,20 @@ export default function Search() {
                   {result.releaseYear && ` · ${result.releaseYear}`}
                 </p>
               </div>
+              <PlusCircle
+                className="ml-auto shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
+                onClick={() => setSelectedAlbum(result)}
+              />
             </div>
           ))}
         </div>
       )}
+      <CollectionPicker
+        album={selectedAlbum}
+        onOpenChange={(open) => {
+          if (!open) setSelectedAlbum(null);
+        }}
+      />
     </div>
   );
 }

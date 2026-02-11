@@ -4,10 +4,15 @@ import { Spinner } from "@/components/ui/spinner";
 import { Button } from "@/components/ui/button";
 import { AnimatePresence, motion } from "motion/react";
 import CreateCollectionPanel from "./create-collection";
+import CollectionDetail from "./collection-detail";
+import type { Collection } from "./types";
+import { Disc3 } from "lucide-react";
 
 export default function Shelf() {
   const { collections, isLoading, refresh } = useCollections();
   const [showForm, setShowForm] = useState(false);
+  const [selectedCollection, setSelectedCollection] =
+    useState<Collection | null>(null);
 
   function handleCreated() {
     setShowForm(false);
@@ -24,7 +29,7 @@ export default function Shelf() {
 
   if (collections.length === 0 && !showForm) {
     return (
-      <div className="flex flex-col gap-5 justify-center items-center min-h-[calc(100vh-5rem)]">
+      <div className="flex flex-col gap-5 justify-center items-center h-full">
         <p className="text-center">
           every record on the shelf is a tiny time machine, waiting for the
           needle to drop
@@ -44,46 +49,68 @@ export default function Shelf() {
   }
 
   return (
-    <div className="flex flex-col gap-4 py-6">
-      <AnimatePresence>
-        {showForm && (
-          <CreateCollectionPanel
-            onCreated={handleCreated}
-            onCancel={() => setShowForm(false)}
-          />
+    <div className="overflow-x-hidden">
+      <AnimatePresence mode="wait">
+        {selectedCollection ? (
+          <motion.div
+            key="detail"
+            initial={{ x: "100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "100%" }}
+            transition={{ type: "tween", duration: 0.25 }}
+          >
+            <CollectionDetail
+              collection={selectedCollection}
+              onBack={() => setSelectedCollection(null)}
+            />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="list"
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "tween", duration: 0.25 }}
+            className="flex flex-col gap-4 py-6"
+          >
+            <AnimatePresence>
+              {showForm && (
+                <CreateCollectionPanel
+                  onCreated={handleCreated}
+                  onCancel={() => setShowForm(false)}
+                />
+              )}
+            </AnimatePresence>
+
+            {collections.length > 0 && !showForm && (
+              <Button
+                className="cursor-pointer self-start"
+                variant="outline"
+                onClick={() => setShowForm(true)}
+              >
+                Create collection
+              </Button>
+            )}
+
+            {collections.map((collection) => (
+              <div
+                key={collection.id}
+                onClick={() => setSelectedCollection(collection)}
+                className="flex items-center gap-3 rounded-lg border p-4 hover:bg-muted transition-colors cursor-pointer"
+              >
+                <Disc3 className="size-5 text-muted-foreground shrink-0" />
+                <div>
+                  <h2 className="font-medium">{collection.name}</h2>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    {collection.albums.length}{" "}
+                    {collection.albums.length === 1 ? "album" : "albums"}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </motion.div>
         )}
       </AnimatePresence>
-
-      {collections.length > 0 && (
-        <>
-          {!showForm && (
-            <Button
-              className="cursor-pointer self-start"
-              variant="outline"
-              onClick={() => setShowForm(true)}
-            >
-              Create collection
-            </Button>
-          )}
-        </>
-      )}
-
-      <motion.div
-        className="flex flex-col gap-4 py-6"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-      >
-        {collections.map((collection) => (
-          <div key={collection.id} className="rounded-lg border p-4">
-            <h2 className="font-medium">{collection.name}</h2>
-
-            <p className="text-xs text-muted-foreground mt-2">
-              {collection.albums.length}{" "}
-              {collection.albums.length === 1 ? "album" : "albums"}
-            </p>
-          </div>
-        ))}
-      </motion.div>
     </div>
   );
 }

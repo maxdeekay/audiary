@@ -10,7 +10,6 @@ export async function login(data: LoginRequest): Promise<AuthResponse> {
   const raw = await post<AuthResponse>("/api/users/login", data);
 
   const response = authResponseSchema.parse(raw);
-  console.log(response);
   setAccessToken(response.token);
 
   return response;
