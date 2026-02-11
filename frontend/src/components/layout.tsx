@@ -6,12 +6,14 @@ import { CollectionProvider } from "@/shelf/collection-provider";
 export default function Layout() {
   return (
     <CollectionProvider>
-      <Header />
       <div
-        className="min-h-screen px-2"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 5rem)" }}
+        className="flex flex-col h-dvh"
+        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 4rem)" }}
       >
-        <Outlet />
+        <Header />
+        <main className="flex-1 overflow-y-auto px-2">
+          <Outlet />
+        </main>
       </div>
       <BottomNav />
     </CollectionProvider>
