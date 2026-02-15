@@ -3,7 +3,7 @@ import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { searchMusic, type MusicSearchResult } from "@/api/music";
 import AlbumCover from "./album-cover";
-import { PlusCircle } from "lucide-react";
+import { Search as SearchIcon, PlusCircle } from "lucide-react";
 import CollectionPicker from "./collection-picker";
 
 export default function Search() {
@@ -36,12 +36,22 @@ export default function Search() {
 
   return (
     <div className="flex flex-col gap-4 py-4">
-      <Input
-        placeholder="Search albums..."
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        autoFocus
-      />
+      <div className="relative">
+        <SearchIcon className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
+        <Input
+          className="pl-9"
+          placeholder="Search albums and artists..."
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          autoFocus
+        />
+      </div>
+
+      {!query.trim() && !isLoading && (
+        <p className="text-sm text-muted-foreground text-center py-12">
+          Search for albums and EPs to add to your collections
+        </p>
+      )}
 
       {isLoading && (
         <div className="flex justify-center py-8">
@@ -70,14 +80,24 @@ export default function Search() {
                   {result.releaseYear && ` · ${result.releaseYear}`}
                 </p>
               </div>
-              <PlusCircle
-                className="ml-auto shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
-                onClick={() => setSelectedAlbum(result)}
-              />
+
+              <div className="flex gap-2 items-center ml-auto shrink-0">
+                {result.genre && (
+                  <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0">
+                    {result.genre.charAt(0).toUpperCase() +
+                      result.genre.slice(1)}
+                  </span>
+                )}
+                <PlusCircle
+                  className="shrink-0 text-muted-foreground hover:text-foreground cursor-pointer"
+                  onClick={() => setSelectedAlbum(result)}
+                />
+              </div>
             </div>
           ))}
         </div>
       )}
+
       <CollectionPicker
         album={selectedAlbum}
         onOpenChange={(open) => {

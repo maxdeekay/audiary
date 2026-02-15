@@ -14,9 +14,9 @@ public class MusicService(HttpClient http) : IMusicService
 {
     public async Task<List<MusicSearchResultDTO>> Search(string query)
     {
-        var fullQuery = Uri.EscapeDataString($"{query} AND primarytype:album");
+        var fullQuery = Uri.EscapeDataString($"{query} AND (primarytype:album OR primarytype:ep)");
         var response = await http.GetFromJsonAsync<MusicBrainzResponse>(
-            $"https://musicbrainz.org/ws/2/release-group/?query={fullQuery}&fmt=json&limit=15"
+            $"https://musicbrainz.org/ws/2/release-group/?query={fullQuery}&fmt=json&limit=30"
         );
 
         if (response?.ReleaseGroups is null)
