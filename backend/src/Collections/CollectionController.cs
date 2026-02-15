@@ -6,28 +6,47 @@ namespace Collections.Controllers;
 
 [ApiController]
 [Authorize]
-[Route("api/[controller]s")]
+[Route("api/collections")]
 public class CollectionController(ICollectionService collectionService) : ControllerBase
 {
-
     [HttpPost]
-    [Authorize]
-    public async Task<CollectionDTO> Create(CreateCollectionDTO request)
+    public async Task<CollectionSummaryResponse> Create(CreateCollectionRequest request)
     {
         var userId = User.GetUserId();
         return await collectionService.Create(request, userId);
     }
 
     [HttpGet]
-    [Authorize]
-    public async Task<List<CollectionDTO>> GetAll()
+    public async Task<List<CollectionSummaryResponse>> GetAll()
     {
         var userId = User.GetUserId();
         return await collectionService.GetAll(userId);
     }
 
+    [HttpGet("{collectionId}")]
+    public async Task<CollectionDetailResponse> GetCollection(int collectionId)
+    {
+        var userId = User.GetUserId();
+        return await collectionService.GetCollection(collectionId, userId);
+    }
+
+    [HttpGet("{collectionId}/albums/{albumId}")]
+    public async Task<CollectionAlbumDetailResponse> GetCollectionAlbum(int collectionId, int albumId)
+    {
+        var userId = User.GetUserId();
+        return await collectionService.GetCollectionAlbum(collectionId, albumId, userId);
+    }
+
+    [HttpPatch("{collectionId}/albums/{albumId}")]
+    public async Task<IActionResult> UpdateCollectionAlbum(int collectionId, int albumId, [FromBody] UpdateCollectionAlbumRequest request)
+    {
+        var userId = User.GetUserId();
+        await collectionService.UpdateCollectionAlbum(collectionId, albumId, request, userId);
+        return NoContent();
+    }
+
     [HttpPost("{collectionId}/albums")]
-    public async Task<CollectionDTO> AddAlbum(int collectionId, AddAlbumDTO request)
+    public async Task<CollectionDetailResponse> AddAlbum(int collectionId, AddAlbumRequest request)
     {
         var userId = User.GetUserId();
         return await collectionService.AddAlbum(collectionId, request, userId);

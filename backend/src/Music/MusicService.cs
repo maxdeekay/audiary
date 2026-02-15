@@ -1,46 +1,50 @@
-using System.Net.Http.Json;
 using System.Text.Json.Serialization;
 
 namespace Music;
 
+public record MusicBrainzTrackResult(string Title, int? Position, int? Length);
+
 public interface IMusicService
 {
     Task<List<MusicSearchResultDTO>> Search(string query);
+    Task<List<MusicBrainzTrackResult>> FetchTracks(string releaseId);
 }
 
 public class MusicService(HttpClient http) : IMusicService
 {
-    private static readonly SemaphoreSlim Throttle = new(1, 1);
-
     public async Task<List<MusicSearchResultDTO>> Search(string query)
     {
-        await Throttle.WaitAsync();
-        try
-        {
-            var fullQuery = Uri.EscapeDataString($"{query} AND primarytype:album");
-            var response = await http.GetFromJsonAsync<MusicBrainzResponse>(
-                $"https://musicbrainz.org/ws/2/release-group/?query={fullQuery}&fmt=json&limit=15"
-            );
+        var fullQuery = Uri.EscapeDataString($"{query} AND primarytype:album");
+        var response = await http.GetFromJsonAsync<MusicBrainzResponse>(
+            $"https://musicbrainz.org/ws/2/release-group/?query={fullQuery}&fmt=json&limit=15"
+        );
 
-            if (response?.ReleaseGroups is null)
-                return [];
+        if (response?.ReleaseGroups is null)
+            return [];
 
-            return response.ReleaseGroups
-                .Select(rg => new MusicSearchResultDTO
-                {
-                    MusicBrainzId = rg.Id,
-                    Title = rg.Title,
-                    Artist = rg.ArtistCredit?.FirstOrDefault()?.Name ?? "Unknown",
-                    CoverUrl = $"https://coverartarchive.org/release-group/{rg.Id}/front-250",
-                    Genre = rg.Tags?.MaxBy(t => t.Count)?.Name,
-                    ReleaseYear = ParseYear(rg.FirstReleaseDate)
-                }).ToList();
-        }
-        finally
-        {
-            await Task.Delay(1000);
-            Throttle.Release();
-        }
+        return response.ReleaseGroups
+            .Select(rg => new MusicSearchResultDTO
+            {
+                MusicBrainzId = rg.Id,
+                MusicBrainzReleaseId = rg.Releases?.FirstOrDefault()?.Id,
+                Title = rg.Title,
+                Artist = rg.ArtistCredit?.FirstOrDefault()?.Name ?? "Unknown",
+                CoverUrl = $"https://coverartarchive.org/release-group/{rg.Id}/front-250",
+                Genre = rg.Tags?.MaxBy(t => t.Count)?.Name,
+                ReleaseYear = ParseYear(rg.FirstReleaseDate)
+            }).ToList();
+    }
+
+    public async Task<List<MusicBrainzTrackResult>> FetchTracks(string releaseId)
+    {
+        var response = await http.GetFromJsonAsync<MusicBrainzReleaseResponse>(
+            $"https://musicbrainz.org/ws/2/release/{releaseId}?inc=recordings&fmt=json"
+        );
+
+        return response?.Media?
+            .SelectMany(m => m.Tracks ?? [])
+            .Select(t => new MusicBrainzTrackResult(t.Title, t.Position, t.Length))
+            .ToList() ?? [];
     }
 
     private static int? ParseYear(string? date)
@@ -49,6 +53,30 @@ public class MusicService(HttpClient http) : IMusicService
         if (date.Length >= 4 && int.TryParse(date[..4], out var year)) return year;
         return null;
     }
+}
+
+file class MusicBrainzReleaseResponse
+{
+    [JsonPropertyName("media")]
+    public List<MusicBrainzMedia>? Media { get; set; }
+}
+
+file class MusicBrainzMedia
+{
+    [JsonPropertyName("tracks")]
+    public List<MusicBrainzTrack>? Tracks { get; set; }
+}
+
+file class MusicBrainzTrack
+{
+    [JsonPropertyName("position")]
+    public int Position { get; set; }
+
+    [JsonPropertyName("title")]
+    public required string Title { get; set; }
+
+    [JsonPropertyName("length")]
+    public int? Length { get; set; }
 }
 
 file class MusicBrainzResponse
@@ -76,6 +104,9 @@ file class ReleaseGroup
 
     [JsonPropertyName("tags")]
     public List<Tag>? Tags { get; set; }
+
+    [JsonPropertyName("releases")]
+    public List<Release>? Releases { get; set; }
 }
 
 file class ArtistCredit
@@ -91,4 +122,10 @@ file class Tag
 
     [JsonPropertyName("count")]
     public int Count { get; set; }
+}
+
+file class Release
+{
+    [JsonPropertyName("id")]
+    public required string Id { get; set; }
 }

@@ -1,26 +1,52 @@
-import { post } from "./client";
+import { get, post, patch } from "./client";
+import type {
+  CollectionSummary,
+  CollectionDetail,
+  CollectionAlbumDetail,
+} from "@/collections/types";
 import type { MusicSearchResult } from "./music";
 
-type CreateCollectionRequest = {
+export async function getCollections() {
+  return get<CollectionSummary[]>("/api/collections");
+}
+
+export async function getCollection(collectionId: number) {
+  return get<CollectionDetail>(`/api/collections/${collectionId}`);
+}
+
+export async function getCollectionAlbum(
+  collectionId: number,
+  albumId: number,
+) {
+  return get<CollectionAlbumDetail>(
+    `/api/collections/${collectionId}/albums/${albumId}`,
+  );
+}
+
+export async function createCollection(data: {
   name: string;
   description?: string;
-};
+}) {
+  return post<CollectionSummary>("/api/collections", data);
+}
 
-type CollectionResponse = {
-  id: number;
-  name: string;
-  description?: string;
-  albums: [];
-  createdAt: string;
-};
-
-export async function createCollection(data: CreateCollectionRequest) {
-  return post<CollectionResponse>("/api/collections", data);
+export async function updateCollectionAlbum(
+  collectionId: number,
+  albumId: number,
+  data: { rating?: number; comment?: string },
+) {
+  return patch<void>(
+    `/api/collections/${collectionId}/albums/${albumId}`,
+    data,
+  );
 }
 
 export async function addAlbumToCollection(
   collectionId: number,
   album: MusicSearchResult,
 ) {
-  return post<void>(`/api/collections/${collectionId}/albums`, album);
+  return post<CollectionDetail>(
+    `/api/collections/${collectionId}/albums`,
+    album,
+  );
 }

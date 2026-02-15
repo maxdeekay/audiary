@@ -20,10 +20,11 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICollectionService, CollectionService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddTransient<ThrottlingHandler>();
 builder.Services.AddHttpClient<IMusicService, MusicService>(client =>
 {
     client.DefaultRequestHeaders.UserAgent.ParseAdd("Audiary/1.0 (max.assermark@gmail.com)");
-});
+}).AddHttpMessageHandler<ThrottlingHandler>();
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

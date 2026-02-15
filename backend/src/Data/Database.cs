@@ -9,6 +9,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<Album> Albums => Set<Album>();
+    public DbSet<Track> Tracks => Set<Track>();
     public DbSet<Collection> Collections => Set<Collection>();
     public DbSet<CollectionAlbum> CollectionAlbums => Set<CollectionAlbum>();
     public DbSet<FavouriteSong> FavouriteSongs => Set<FavouriteSong>();

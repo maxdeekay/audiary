@@ -4,14 +4,16 @@ import { User } from "lucide-react";
 const pageTitles: Record<string, string> = {
   "/": "Home",
   "/search": "Search",
-  "/shelf": "Shelf",
+  "/collections": "Collections",
   "/challenges": "Challenges",
   "/profile": "Profile",
 };
 
 export default function Header() {
   const location = useLocation();
-  const title = pageTitles[location.pathname] ?? "";
+  const title =
+    pageTitles[location.pathname] ??
+    (location.pathname.startsWith("/collections") ? "Collections" : "");
   const navigate = useNavigate();
 
   return (

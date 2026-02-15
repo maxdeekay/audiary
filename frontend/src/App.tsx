@@ -2,7 +2,9 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Auth from "./auth";
 import Home from "./home";
-import Shelf from "./shelf";
+import Collections from "./collections";
+import CollectionDetail from "./collections/collection-detail";
+import AlbumDetail from "./collections/album-detail";
 import Search from "./search";
 import Challenges from "./challenges";
 import Profile from "./profile";
@@ -23,7 +25,15 @@ export default function App() {
         >
           <Route path="/" element={<Home />} />
           <Route path="/search" element={<Search />} />
-          <Route path="/shelf" element={<Shelf />} />
+          <Route path="/collections" element={<Collections />} />
+          <Route
+            path="/collections/:collectionId"
+            element={<CollectionDetail />}
+          />
+          <Route
+            path="/collections/:collectionId/albums/:albumId"
+            element={<AlbumDetail />}
+          />
           <Route path="/challenges" element={<Challenges />} />
           <Route path="/profile" element={<Profile />} />
         </Route>

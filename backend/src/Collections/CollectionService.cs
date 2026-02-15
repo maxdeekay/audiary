@@ -2,49 +2,93 @@ using Microsoft.EntityFrameworkCore;
 using Exceptions;
 using Data;
 using Albums;
+using Music;
+using Users;
 
 namespace Collections;
 
 public interface ICollectionService
 {
-    Task<CollectionDTO> Create(CreateCollectionDTO request, int userId);
-    Task<List<CollectionDTO>> GetAll(int userId);
-    Task<CollectionDTO> AddAlbum(int collectionId, AddAlbumDTO request, int userId);
+    Task<CollectionSummaryResponse> Create(CreateCollectionRequest request, int userId);
+    Task<List<CollectionSummaryResponse>> GetAll(int userId);
+    Task<CollectionDetailResponse> GetCollection(int collectionId, int userId);
+    Task<CollectionAlbumDetailResponse> GetCollectionAlbum(int collectionId, int albumId, int userId);
+    Task<CollectionDetailResponse> AddAlbum(int collectionId, AddAlbumRequest request, int userId);
+    Task UpdateCollectionAlbum(int collectionId, int albumId, UpdateCollectionAlbumRequest request, int userId);
 }
 
-public class CollectionService(AppDbContext db) : ICollectionService
+public class CollectionService(AppDbContext db, IMusicService musicService) : ICollectionService
 {
-    public async Task<CollectionDTO> Create(CreateCollectionDTO request, int userId)
+    public async Task<CollectionSummaryResponse> Create(CreateCollectionRequest request, int userId)
     {
         var collection = CollectionMapper.ToEntity(request, userId);
         db.Collections.Add(collection);
         await db.SaveChangesAsync();
-        return CollectionMapper.ToDTO(collection);
+        return CollectionMapper.ToSummary(collection);
     }
 
-    public async Task<List<CollectionDTO>> GetAll(int userId)
+    public async Task<List<CollectionSummaryResponse>> GetAll(int userId)
     {
         var collections = await db.Collections
             .Where(c => c.UserId == userId)
             .Include(c => c.Albums)
-                .ThenInclude(ca => ca.Album)
-            .Include(c => c.Albums)
-                .ThenInclude(ca => ca.FavouriteSongs)
-            .AsSplitQuery()
             .ToListAsync();
 
-        return [.. collections.Select(CollectionMapper.ToDTO)];
+        return [.. collections.Select(CollectionMapper.ToSummary)];
     }
 
-    public async Task<CollectionDTO> AddAlbum(int collectionId, AddAlbumDTO request, int userId)
+    public async Task<CollectionDetailResponse> GetCollection(int collectionId, int userId)
     {
         var collection = await db.Collections
+            .Where(c => c.Id == collectionId && c.UserId == userId)
             .Include(c => c.Albums)
                 .ThenInclude(ca => ca.Album)
+            .FirstOrDefaultAsync()
+                ?? throw new NotFoundException("Collection not found");
+
+        return CollectionMapper.ToDetail(collection);
+    }
+
+    public async Task<CollectionAlbumDetailResponse> GetCollectionAlbum(int collectionId, int albumId, int userId)
+    {
+        var collectionAlbum = await db.CollectionAlbums
+            .Where(ca => ca.CollectionId == collectionId && ca.AlbumId == albumId && ca.Collection.UserId == userId)
+            .Include(ca => ca.Album)
+                .ThenInclude(a => a.Tracks)
+            .Include(ca => ca.FavouriteSongs)
+            .FirstOrDefaultAsync()
+                ?? throw new NotFoundException("Album not found in collection");
+
+        if (collectionAlbum.Album.Tracks is null || collectionAlbum.Album.Tracks.Count == 0)
+        {
+            if (collectionAlbum.Album.MusicBrainzReleaseId is not null)
+            {
+                var trackData = await musicService.FetchTracks(collectionAlbum.Album.MusicBrainzReleaseId);
+
+                collectionAlbum.Album.Tracks = trackData.Select(t => new Track
+                {
+                    Title = t.Title,
+                    Position = t.Position,
+                    Length = t.Length,
+                    AlbumId = collectionAlbum.AlbumId,
+                    Album = collectionAlbum.Album
+                }).ToList();
+
+                await db.SaveChangesAsync();
+            }
+        }
+
+        return CollectionMapper.ToAlbumDetail(collectionAlbum);
+    }
+
+    public async Task<CollectionDetailResponse> AddAlbum(int collectionId, AddAlbumRequest request, int userId)
+    {
+        var collection = await db.Collections
+            .Where(c => c.Id == collectionId && c.UserId == userId)
             .Include(c => c.Albums)
-                .ThenInclude(ca => ca.FavouriteSongs)
-            .FirstOrDefaultAsync(c => c.Id == collectionId && c.UserId == userId)
-            ?? throw new NotFoundException("Collection not found");
+                .ThenInclude(ca => ca.Album)
+            .FirstOrDefaultAsync()
+                ?? throw new NotFoundException("Collection not found");
 
         var album = await db.Albums.FirstOrDefaultAsync(a => a.MusicBrainzId == request.MusicBrainzId);
 
@@ -55,7 +99,8 @@ public class CollectionService(AppDbContext db) : ICollectionService
             Artist = request.Artist,
             CoverUrl = request.CoverUrl,
             Genre = request.Genre,
-            ReleaseYear = request.ReleaseYear
+            ReleaseYear = request.ReleaseYear,
+            MusicBrainzReleaseId = request.MusicBrainzReleaseId
         };
 
         var collectionAlbum = new CollectionAlbum
@@ -68,6 +113,21 @@ public class CollectionService(AppDbContext db) : ICollectionService
         collection.Albums.Add(collectionAlbum);
         await db.SaveChangesAsync();
 
-        return CollectionMapper.ToDTO(collection);
+        return CollectionMapper.ToDetail(collection);
+    }
+
+    public async Task UpdateCollectionAlbum(int collectionId, int albumId, UpdateCollectionAlbumRequest request, int userId)
+    {
+        var collectionAlbum = await db.CollectionAlbums
+            .FirstOrDefaultAsync(ca => ca.CollectionId == collectionId && ca.AlbumId == albumId && ca.Collection.UserId == userId)
+                ?? throw new NotFoundException("Album not found in collection");
+
+        if (request.Rating is not null)
+            collectionAlbum.Rating = request.Rating;
+
+        if (request.Comment is not null)
+            collectionAlbum.Comment = request.Comment;
+
+        await db.SaveChangesAsync();
     }
 }

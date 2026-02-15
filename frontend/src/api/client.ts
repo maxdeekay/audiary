@@ -1,3 +1,5 @@
+import { toast } from "sonner";
+
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "";
 
 const TOKEN_KEY = "access_key";
@@ -61,6 +63,9 @@ async function apiRequest<T>(options: RequestOptions): Promise<T> {
 
   if (!response.ok) {
     const errorBody = await response.json().catch(() => null);
+    if (response.status !== 401) {
+      toast.error("Something went wrong, please try again.");
+    }
     throw new ApiError(response.status, response.statusText, errorBody);
   }
 
@@ -77,4 +82,8 @@ export function get<T>(path: string) {
 
 export function post<T>(path: string, body?: unknown) {
   return apiRequest<T>({ method: "POST", path, body });
+}
+
+export function patch<T>(path: string, body?: unknown) {
+  return apiRequest<T>({ method: "PATCH", path, body });
 }

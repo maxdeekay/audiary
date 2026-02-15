@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { createCollection } from "@/api/collections";
+import { useCollections } from "./use-collections";
 
 type CreateCollectionForm = {
   name: string;
@@ -17,6 +18,7 @@ export default function CreateCollectionPanel({
   onCreated: () => void;
   onCancel: () => void;
 }) {
+  const { refresh } = useCollections();
   const form = useForm<CreateCollectionForm>({
     defaultValues: { name: "", description: "" },
   });
@@ -26,6 +28,7 @@ export default function CreateCollectionPanel({
       name: data.name.trim(),
       description: data.description.trim() || undefined,
     });
+    await refresh();
     onCreated();
   }
 

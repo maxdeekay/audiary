@@ -2,6 +2,7 @@ import { get } from "./client";
 
 export type MusicSearchResult = {
   musicBrainzId: string;
+  musicBrainzReleaseId: string;
   title: string;
   artist: string;
   coverUrl?: string;

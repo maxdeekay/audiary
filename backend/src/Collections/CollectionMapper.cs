@@ -2,49 +2,81 @@ namespace Collections;
 
 public static class CollectionMapper
 {
-    public static CollectionDTO ToDTO(Collection collection)
+    public static CollectionSummaryResponse ToSummary(Collection collection)
     {
-        return new CollectionDTO
+        return new CollectionSummaryResponse
+        {
+            Id = collection.Id,
+            Name = collection.Name,
+            Description = collection.Description,
+            AlbumCount = collection.Albums.Count,
+            CreatedAt = collection.CreatedAt
+        };
+    }
+
+    public static CollectionDetailResponse ToDetail(Collection collection)
+    {
+        return new CollectionDetailResponse
         {
             Id = collection.Id,
             Name = collection.Name,
             Description = collection.Description,
             CreatedAt = collection.CreatedAt,
-            Albums = [.. collection.Albums.Select(ToDTO)]
+            Albums = [.. collection.Albums.Select(ToAlbumResponse)]
         };
     }
 
-    public static CollectionAlbumDTO ToDTO(CollectionAlbum album)
+    public static CollectionAlbumResponse ToAlbumResponse(CollectionAlbum ca)
     {
-        return new CollectionAlbumDTO
+        return new CollectionAlbumResponse
         {
-            Id = album.Id,
-            AlbumId = album.AlbumId,
-            MusicBrainzId = album.Album.MusicBrainzId,
-            Title = album.Album.Title,
-            Artist = album.Album.Artist,
-            CoverUrl = album.Album.CoverUrl,
-            Genre = album.Album.Genre,
-            ReleaseYear = album.Album.ReleaseYear,
-            Rating = album.Rating,
-            Position = album.Position,
-            Comment = album.Comment,
-            AddedAt = album.AddedAt,
-            FavouriteSongs = [.. album.FavouriteSongs.Select(ToDTO)]
+            Id = ca.Id,
+            AlbumId = ca.AlbumId,
+            MusicBrainzId = ca.Album.MusicBrainzId,
+            Title = ca.Album.Title,
+            Artist = ca.Album.Artist,
+            CoverUrl = ca.Album.CoverUrl,
+            Genre = ca.Album.Genre,
+            ReleaseYear = ca.Album.ReleaseYear,
+            Rating = ca.Rating,
+            Position = ca.Position,
+            AddedAt = ca.AddedAt
         };
     }
 
-    public static FavouriteSongDTO ToDTO(FavouriteSong song)
+    public static CollectionAlbumDetailResponse ToAlbumDetail(CollectionAlbum ca)
     {
-        return new FavouriteSongDTO
+        return new CollectionAlbumDetailResponse
         {
-            Id = song.Id,
-            Name = song.Name,
-            Position = song.Position
+            Id = ca.Id,
+            AlbumId = ca.AlbumId,
+            MusicBrainzId = ca.Album.MusicBrainzId,
+            Title = ca.Album.Title,
+            Artist = ca.Album.Artist,
+            CoverUrl = ca.Album.CoverUrl,
+            Genre = ca.Album.Genre,
+            ReleaseYear = ca.Album.ReleaseYear,
+            Rating = ca.Rating,
+            Position = ca.Position,
+            Comment = ca.Comment,
+            AddedAt = ca.AddedAt,
+            Tracks = [.. ca.Album.Tracks?.Select(t => new TrackResponse
+            {
+                Id = t.Id,
+                Title = t.Title,
+                Position = t.Position ?? 0,
+                Length = t.Length
+            }) ?? []],
+            FavouriteSongs = [.. ca.FavouriteSongs.Select(fs => new FavouriteSongResponse
+            {
+                Id = fs.Id,
+                Name = fs.Name,
+                Position = fs.Position
+            })]
         };
     }
 
-    public static Collection ToEntity(CreateCollectionDTO request, int userId)
+    public static Collection ToEntity(CreateCollectionRequest request, int userId)
     {
         return new Collection
         {

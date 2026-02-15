@@ -1,15 +1,20 @@
 import { Link, useLocation } from "react-router-dom";
-import { House, Search, Swords, LibraryBig } from "lucide-react";
+import { House, Search, Swords, ListMusic } from "lucide-react";
 
 const links = [
   { to: "/", icon: House, label: "Home" },
   { to: "/search", icon: Search, label: "Search" },
-  { to: "/shelf", icon: LibraryBig, label: "Shelf" },
+  { to: "/collections", icon: ListMusic, label: "Collections" },
   { to: "/challenges", icon: Swords, label: "Challenges" },
 ];
 
 export default function BottomNav() {
   const { pathname } = useLocation();
+
+  function isActive(to: string) {
+    if (to === "/") return pathname === "/";
+    return pathname.startsWith(to);
+  }
 
   return (
     <nav
@@ -21,7 +26,7 @@ export default function BottomNav() {
           <Link
             key={to}
             to={to}
-            className={`flex flex-col items-center ${pathname == to ? "text-primary" : "text-muted-foreground"}`}
+            className={`flex flex-col items-center ${isActive(to) ? "text-primary" : "text-muted-foreground"}`}
             aria-label={label}
           >
             <Icon className="size-7" />
