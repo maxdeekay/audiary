@@ -7,10 +7,7 @@ import { CollectionProvider } from "@/collections/collection-provider";
 export default function Layout() {
   return (
     <CollectionProvider>
-      <div
-        className="flex flex-col h-dvh"
-        style={{ paddingBottom: "calc(env(safe-area-inset-bottom) + 4rem)" }}
-      >
+      <div className="flex flex-col h-dvh app-shell">
         <Header />
         <main className="flex-1 overflow-y-auto overflow-x-hidden px-2">
           <Outlet />

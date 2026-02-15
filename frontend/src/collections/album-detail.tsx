@@ -140,7 +140,7 @@ export default function AlbumDetail() {
               value={commentValue}
               onChange={(e) => setCommentValue(e.target.value)}
               placeholder="What did you think?"
-              className="w-full h-24 rounded-md border border-border bg-background px-3 py-2 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-ring"
+              className="w-full h-24 rounded-md border border-border bg-background px-3 py-2 text-base resize-none focus:outline-none focus:ring-1 focus:ring-ring"
               autoFocus
               onFocus={(e) => {
                 const val = e.target.value;

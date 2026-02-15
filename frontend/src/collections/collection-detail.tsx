@@ -83,6 +83,11 @@ export default function CollectionDetail() {
                   {album.releaseYear && ` · ${album.releaseYear}`}
                 </p>
               </div>
+              {album.genre && (
+                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full shrink-0 ml-auto">
+                  {album.genre.charAt(0).toUpperCase() + album.genre.slice(1)}
+                </span>
+              )}
             </div>
           ))}
         </div>
