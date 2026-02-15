@@ -1,6 +1,6 @@
 # AUDIARY
 
-A music collection app for organizing and rating albums. Search for music, build collections and track your thoughts on each album.
+A music collection app for organizing and rating albums. Search for music, build collections and track your thoughts on each album. Designed for mobile.
 
 [audiary.net](https://audiary.net)
 
