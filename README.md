@@ -4,10 +4,10 @@ A music collection app for organizing and rating albums. Search for music, build
 
 [audiary.net](https://audiary.net)
 
-React, Tailwind, shadcn/ui, Lucide, Vite
-ASP.NET Core, Entity Framework
-PostgreSQL
-MusicBrainz API
+* React, Tailwind, shadcn/ui, Lucide, Vite
+* ASP.NET Core, Entity Framework
+* PostgreSQL
+* MusicBrainz API
 
 ```bash
 # db
