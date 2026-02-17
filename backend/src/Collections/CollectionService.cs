@@ -32,6 +32,7 @@ public class CollectionService(AppDbContext db, IMusicService musicService) : IC
         var collections = await db.Collections
             .Where(c => c.UserId == userId)
             .Include(c => c.Albums)
+                .ThenInclude(ca => ca.Album)
             .ToListAsync();
 
         return [.. collections.Select(CollectionMapper.ToSummary)];
@@ -41,7 +42,7 @@ public class CollectionService(AppDbContext db, IMusicService musicService) : IC
     {
         var collection = await db.Collections
             .Where(c => c.Id == collectionId && c.UserId == userId)
-            .Include(c => c.Albums)
+            .Include(c => c.Albums.OrderByDescending(ca => ca.AddedAt))
                 .ThenInclude(ca => ca.Album)
             .FirstOrDefaultAsync()
                 ?? throw new NotFoundException("Collection not found");

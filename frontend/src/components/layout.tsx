@@ -7,9 +7,9 @@ import { CollectionProvider } from "@/collections/collection-provider";
 export default function Layout() {
   return (
     <CollectionProvider>
-      <div className="flex flex-col h-dvh app-shell">
+      <div className="flex flex-col min-h-svh">
         <Header />
-        <main className="flex-1 overflow-y-auto overflow-x-hidden px-2">
+        <main className="flex-1 overflow-y-auto overflow-x-hidden px-2 pb-20">
           <Outlet />
         </main>
       </div>

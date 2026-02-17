@@ -6,6 +6,7 @@ public class CollectionSummaryResponse
     public required string Name { get; set; }
     public string? Description { get; set; }
     public int AlbumCount { get; set; }
+    public List<string> MusicBrainzIds { get; set; } = [];
     public required DateTime CreatedAt { get; set; }
 }
 

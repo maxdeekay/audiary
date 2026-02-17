@@ -10,6 +10,7 @@ public static class CollectionMapper
             Name = collection.Name,
             Description = collection.Description,
             AlbumCount = collection.Albums.Count,
+            MusicBrainzIds = [.. collection.Albums.Select(a => a.Album.MusicBrainzId)],
             CreatedAt = collection.CreatedAt
         };
     }

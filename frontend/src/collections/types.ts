@@ -15,6 +15,7 @@ export type CollectionSummary = {
   name: string;
   description?: string;
   albumCount: number;
+  musicBrainzIds: string[];
   createdAt: string;
 };
 

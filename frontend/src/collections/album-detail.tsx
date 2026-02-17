@@ -1,11 +1,11 @@
 import { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { motion } from "motion/react";
 import { getCollectionAlbum, updateCollectionAlbum } from "@/api/collections";
 import type { CollectionAlbumDetail } from "./types";
 import AlbumCover from "@/search/album-cover";
 import { Spinner } from "@/components/ui/spinner";
-import { ArrowLeft, Star, Pencil } from "lucide-react";
+import { Star, Pencil } from "lucide-react";
 import {
   Drawer,
   DrawerContent,
@@ -25,7 +25,6 @@ export default function AlbumDetail() {
     collectionId: string;
     albumId: string;
   }>();
-  const navigate = useNavigate();
   const [album, setAlbum] = useState<CollectionAlbumDetail | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [drawerField, setDrawerField] = useState<"rating" | "comment" | null>(
@@ -156,94 +155,85 @@ export default function AlbumDetail() {
         initial={{ opacity: 0, x: 50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.2 }}
+        className="flex flex-col gap-2 mt-4"
       >
-        <div className="flex flex-col gap-4 py-6">
+        <div className="flex flex-col gap-3 mx-2">
+          <div className="flex gap-3">
+            <AlbumCover
+              src={album.coverUrl?.replace("front-250", "front-500") ?? ""}
+              alt={album.title}
+              size="size-16"
+            />
+            <div className="flex-1 min-w-0">
+              <div className="flex justify-between">
+                <h2 className="text-xl font-semibold truncate">
+                  {album.title}
+                </h2>
+                <button
+                  className="flex gap-2 items-center shrink-0 cursor-pointer"
+                  onClick={() => openDrawer("rating")}
+                >
+                  {album.rating !== null ? (
+                    <>
+                      <span className="font-medium">
+                        {album.rating?.toFixed(1)}
+                      </span>
+                      <Star className="size-6 text-yellow-300 fill-yellow-300" />
+                    </>
+                  ) : (
+                    <>
+                      <span>Rate</span>
+                      <Star className="size-6" />
+                    </>
+                  )}
+                </button>
+              </div>
+
+              <p className="text-sm text-muted-foreground truncate">
+                {album.artist}
+                {album.releaseYear && ` · ${album.releaseYear}`}
+              </p>
+            </div>
+          </div>
+
           <button
-            onClick={() => navigate(-1)}
-            className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors cursor-pointer self-start"
+            className="flex items-center gap-2 w-full py-3 border-b border-border text-left group cursor-pointer"
+            onClick={() => openDrawer("comment")}
           >
-            <ArrowLeft className="size-4" />
-            Back
+            {album.comment ? (
+              <p className="text-sm text-muted-foreground">{album.comment}</p>
+            ) : (
+              <span className="text-sm text-muted-foreground">
+                Add a comment...
+              </span>
+            )}
+            <Pencil className="size-3.5 text-muted-foreground shrink-0 ml-auto" />
           </button>
 
-          <div className="flex flex-col gap-3 mx-2">
-            <div className="flex gap-3">
-              <AlbumCover
-                src={album.coverUrl?.replace("front-250", "front-500") ?? ""}
-                alt={album.title}
-                size="size-16"
-              />
-              <div className="flex-1 min-w-0">
-                <div className="flex justify-between">
-                  <h2 className="text-xl font-semibold truncate">
-                    {album.title}
-                  </h2>
-                  <button
-                    className="flex gap-2 items-center shrink-0 cursor-pointer"
-                    onClick={() => openDrawer("rating")}
-                  >
-                    {album.rating !== null ? (
-                      <>
-                        <span className="font-medium">
-                          {album.rating?.toFixed(1)}
-                        </span>
-                        <Star className="size-6 text-yellow-300 fill-yellow-300" />
-                      </>
-                    ) : (
-                      <>
-                        <span>Rate</span>
-                        <Star className="size-6" />
-                      </>
-                    )}
-                  </button>
-                </div>
-
-                <p className="text-sm text-muted-foreground truncate">
-                  {album.artist}
-                  {album.releaseYear && ` · ${album.releaseYear}`}
-                </p>
-              </div>
-            </div>
-
-            <button
-              className="flex items-center gap-2 w-full py-3 border-b border-border text-left group cursor-pointer"
-              onClick={() => openDrawer("comment")}
-            >
-              {album.comment ? (
-                <p className="text-sm text-muted-foreground">{album.comment}</p>
-              ) : (
-                <span className="text-sm text-muted-foreground">
-                  Add a comment...
+          {/* Track List */}
+          <div className="flex flex-col">
+            <h3 className="text-lg font-semibold">Tracks</h3>
+            {album.tracks.map((track) => (
+              <div
+                key={track.id}
+                className="flex items-center gap-3 py-3 border-b border-border last:border-0"
+              >
+                <span className="text-sm text-muted-foreground w-4 text-right">
+                  {track.position}
                 </span>
-              )}
-              <Pencil className="size-3.5 text-muted-foreground shrink-0 ml-auto" />
-            </button>
+                <span className="flex-1 truncate">{track.title}</span>
 
-            {/* Track List */}
-            <div className="flex flex-col">
-              <h3 className="text-lg font-semibold">Tracks</h3>
-              {album.tracks.map((track) => (
-                <div
-                  key={track.id}
-                  className="flex items-center gap-3 py-3 border-b border-border last:border-0"
-                >
-                  <span className="text-sm text-muted-foreground w-4 text-right">
-                    {track.position}
+                {track.length && (
+                  <span className="text-sm text-muted-foreground">
+                    {formatDuration(track.length)}
                   </span>
-                  <span className="flex-1 truncate">{track.title}</span>
+                )}
 
-                  {track.length && (
-                    <span className="text-sm text-muted-foreground">
-                      {formatDuration(track.length)}
-                    </span>
-                  )}
-
-                  <button className="cursor-pointer">
-                    <Star className="size-5 text-muted-foreground" />
-                  </button>
-                </div>
-              ))}
-            </div>
+                <button className="cursor-pointer">
+                  <Star className="size-5 text-muted-foreground" />
+                </button>
+              </div>
+            ))}
           </div>
         </div>
       </motion.div>
