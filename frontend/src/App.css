@@ -4,10 +4,6 @@ main {
     scrollbar-width: none;
 }
 
-.app-shell {
-    padding-bottom: calc(env(safe-area-inset-bottom) + 4rem);
-}
-
 html::-webkit-scrollbar,
 body::-webkit-scrollbar,
 main::-webkit-scrollbar {
