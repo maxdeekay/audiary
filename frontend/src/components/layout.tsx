@@ -12,8 +12,8 @@ export default function Layout() {
         <main className="flex-1 overflow-y-auto overflow-x-hidden px-2">
           <Outlet />
         </main>
+        <BottomNav />
       </div>
-      <BottomNav />
       <Toaster
         position="top-center"
         style={{ top: "calc(env(safe-area-inset-top) + 3.5rem)" }}

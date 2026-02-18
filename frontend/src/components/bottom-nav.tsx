@@ -17,7 +17,10 @@ export default function BottomNav() {
   }
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 border-t bg-background pb-8">
+    <nav
+      className="shrink-0 border-t bg-background"
+      style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
+    >
       <div className="flex justify-around mt-2 h-14">
         {links.map(({ to, icon: Icon, label }) => (
           <Link
