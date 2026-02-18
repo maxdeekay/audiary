@@ -24,15 +24,15 @@ public class CollectionAlbum
     public decimal? Rating { get; set; }
     public int Position { get; set; }
     public string? Comment { get; set; }
-    public List<FavouriteSong> FavouriteSongs { get; set; } = [];
+    public List<FavouriteTrack> FavouriteTracks { get; set; } = [];
     public required DateTime AddedAt { get; set; }
 }
 
-public class FavouriteSong
+public class FavouriteTrack
 {
     public int Id { get; set; }
+    public int TrackId { get; set; }
+    public Track Track { get; set; } = null!;
     public int CollectionAlbumId { get; set; }
     public CollectionAlbum CollectionAlbum { get; set; } = null!;
-    public required string Name { get; set; }
-    public int Position { get; set; }
 }

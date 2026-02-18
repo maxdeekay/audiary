@@ -12,7 +12,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
     public DbSet<Track> Tracks => Set<Track>();
     public DbSet<Collection> Collections => Set<Collection>();
     public DbSet<CollectionAlbum> CollectionAlbums => Set<CollectionAlbum>();
-    public DbSet<FavouriteSong> FavouriteSongs => Set<FavouriteSong>();
+    public DbSet<FavouriteTrack> FavouriteTracks => Set<FavouriteTrack>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

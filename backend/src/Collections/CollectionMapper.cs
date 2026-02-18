@@ -66,14 +66,9 @@ public static class CollectionMapper
                 Id = t.Id,
                 Title = t.Title,
                 Position = t.Position ?? 0,
-                Length = t.Length
-            }) ?? []],
-            FavouriteSongs = [.. ca.FavouriteSongs.Select(fs => new FavouriteSongResponse
-            {
-                Id = fs.Id,
-                Name = fs.Name,
-                Position = fs.Position
-            })]
+                Length = t.Length,
+                IsFavourite = ca.FavouriteTracks.Any(fs => fs.TrackId == t.Id)
+            }) ?? []]
         };
     }
 

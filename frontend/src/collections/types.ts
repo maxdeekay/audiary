@@ -54,7 +54,6 @@ export type CollectionAlbumDetail = {
   position: number;
   comment?: string;
   tracks: Track[];
-  favouriteSongs: FavouriteSong[];
   addedAt: string;
 };
 
@@ -63,10 +62,5 @@ export type Track = {
   title: string;
   position: number;
   length?: number;
-};
-
-export type FavouriteSong = {
-  id: number;
-  name: string;
-  position: number;
+  isFavourite: boolean;
 };

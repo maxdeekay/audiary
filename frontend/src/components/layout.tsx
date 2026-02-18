@@ -17,6 +17,13 @@ export default function Layout() {
       <Toaster
         position="top-center"
         style={{ top: "calc(env(safe-area-inset-top) + 3.5rem)" }}
+        toastOptions={{
+          classNames: {
+            toast: "!bg-background !text-foreground !border !border-border",
+            success: "!text-green-500 !border-green-500",
+            error: "!text-red-500 !border-red-500",
+          },
+        }}
       />
     </CollectionProvider>
   );

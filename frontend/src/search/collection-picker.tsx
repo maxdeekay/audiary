@@ -8,6 +8,8 @@ import {
   DrawerTitle,
 } from "@/components/ui/drawer";
 import { Disc3, Check } from "lucide-react";
+import { toast } from "sonner";
+import type { CollectionSummary } from "@/collections/types";
 
 type CollectionPickerProps = {
   album: MusicSearchResult | null;
@@ -19,11 +21,13 @@ export default function CollectionPicker({
   onOpenChange,
 }: CollectionPickerProps) {
   const { collections, refresh } = useCollections();
-  async function handleSelect(collectionId: number) {
+
+  async function handleSelect(collection: CollectionSummary) {
     if (!album) return;
-    await addAlbumToCollection(collectionId, album);
-    await refresh();
     onOpenChange(false);
+    toast.success(`${album.title} added to ${collection.name}`);
+    await addAlbumToCollection(collection.id, album);
+    refresh();
   }
 
   return (
@@ -45,7 +49,7 @@ export default function CollectionPicker({
             return (
               <button
                 key={collection.id}
-                onClick={() => !alreadyAdded && handleSelect(collection.id)}
+                onClick={() => !alreadyAdded && handleSelect(collection)}
                 disabled={alreadyAdded}
                 className={`flex items-center gap-3 rounded-lg p-3 text-left transition-colors ${
                   alreadyAdded

@@ -84,6 +84,10 @@ export function post<T>(path: string, body?: unknown) {
   return apiRequest<T>({ method: "POST", path, body });
 }
 
+export function remove<T>(path: string, body?: unknown) {
+  return apiRequest<T>({ method: "DELETE", path, body });
+}
+
 export function patch<T>(path: string, body?: unknown) {
   return apiRequest<T>({ method: "PATCH", path, body });
 }

@@ -1,4 +1,4 @@
-import { get, post, patch } from "./client";
+import { get, post, remove, patch } from "./client";
 import type {
   CollectionSummary,
   CollectionDetail,
@@ -48,5 +48,23 @@ export async function addAlbumToCollection(
   return post<CollectionDetail>(
     `/api/collections/${collectionId}/albums`,
     album,
+  );
+}
+
+export async function addFavouriteTrack(
+  collectionAlbumId: number,
+  trackId: number,
+) {
+  return post<void>(
+    `/api/collections/${collectionAlbumId}/favourites/${trackId}`,
+  );
+}
+
+export async function deleteFavouriteTrack(
+  collectionAlbumId: number,
+  trackId: number,
+) {
+  return remove<void>(
+    `/api/collections/${collectionAlbumId}/favourites/${trackId}`,
   );
 }

@@ -1,3 +1,4 @@
+using Albums;
 using Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -50,5 +51,21 @@ public class CollectionController(ICollectionService collectionService) : Contro
     {
         var userId = User.GetUserId();
         return await collectionService.AddAlbum(collectionId, request, userId);
+    }
+
+    [HttpPost("{collectionAlbumId}/favourites/{trackId}")]
+    public async Task<IActionResult> AddFavouriteTrack(int collectionAlbumId, int trackId)
+    {
+        var userId = User.GetUserId();
+        await collectionService.AddFavouriteTrack(collectionAlbumId, trackId, userId);
+        return NoContent();
+    }
+
+    [HttpDelete("{collectionAlbumId}/favourites/{trackId}")]
+    public async Task<IActionResult> DeleteFavouriteTrack(int collectionAlbumId, int trackId)
+    {
+        var userId = User.GetUserId();
+        await collectionService.DeleteFavouriteTrack(collectionAlbumId, trackId, userId);
+        return NoContent();
     }
 }

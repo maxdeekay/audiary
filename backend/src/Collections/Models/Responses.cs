@@ -48,7 +48,6 @@ public class CollectionAlbumDetailResponse
     public int Position { get; set; }
     public string? Comment { get; set; }
     public List<TrackResponse> Tracks { get; set; } = [];
-    public List<FavouriteSongResponse> FavouriteSongs { get; set; } = [];
     public required DateTime AddedAt { get; set; }
 }
 
@@ -58,11 +57,5 @@ public class TrackResponse
     public required string Title { get; set; }
     public int Position { get; set; }
     public int? Length { get; set; }
-}
-
-public class FavouriteSongResponse
-{
-    public int Id { get; set; }
-    public required string Name { get; set; }
-    public int Position { get; set; }
+    public bool IsFavourite { get; set; }
 }

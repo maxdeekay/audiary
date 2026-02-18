@@ -1,8 +1,13 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import { motion } from "motion/react";
-import { getCollectionAlbum, updateCollectionAlbum } from "@/api/collections";
-import type { CollectionAlbumDetail } from "./types";
+import {
+  getCollectionAlbum,
+  updateCollectionAlbum,
+  addFavouriteTrack,
+  deleteFavouriteTrack,
+} from "@/api/collections";
+import type { CollectionAlbumDetail, Track } from "./types";
 import AlbumCover from "@/search/album-cover";
 import { Spinner } from "@/components/ui/spinner";
 import { Star, Pencil } from "lucide-react";
@@ -48,6 +53,38 @@ export default function AlbumDetail() {
     }
     fetchCollectionAlbum();
   }, [collectionId, albumId]);
+
+  function toggleFavourite(track: Track) {
+    if (!album) return;
+
+    setAlbum(
+      (prev) =>
+        prev && {
+          ...prev,
+          tracks: prev.tracks.map((t) =>
+            t.id === track.id ? { ...t, isFavourite: !t.isFavourite } : t,
+          ),
+        },
+    );
+
+    try {
+      if (track.isFavourite) {
+        deleteFavouriteTrack(album.id, track.id);
+      } else {
+        addFavouriteTrack(album.id, track.id);
+      }
+    } catch {
+      setAlbum(
+        (prev) =>
+          prev && {
+            ...prev,
+            tracks: prev.tracks.map((t) =>
+              t.id === track.id ? { ...t, isFavourite: track.isFavourite } : t,
+            ),
+          },
+      );
+    }
+  }
 
   function openDrawer(field: "rating" | "comment") {
     if (field === "rating") setRatingValue(album?.rating ?? 0);
@@ -229,8 +266,13 @@ export default function AlbumDetail() {
                   </span>
                 )}
 
-                <button className="cursor-pointer">
-                  <Star className="size-5 text-muted-foreground" />
+                <button
+                  className="cursor-pointer"
+                  onClick={() => toggleFavourite(track)}
+                >
+                  <Star
+                    className={`size-5 ${track.isFavourite ? "text-yellow-300 fill-yellow-300" : "text-muted-foreground"}`}
+                  />
                 </button>
               </div>
             ))}

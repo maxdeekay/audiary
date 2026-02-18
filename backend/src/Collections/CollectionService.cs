@@ -15,6 +15,8 @@ public interface ICollectionService
     Task<CollectionAlbumDetailResponse> GetCollectionAlbum(int collectionId, int albumId, int userId);
     Task<CollectionDetailResponse> AddAlbum(int collectionId, AddAlbumRequest request, int userId);
     Task UpdateCollectionAlbum(int collectionId, int albumId, UpdateCollectionAlbumRequest request, int userId);
+    Task AddFavouriteTrack(int collectionAlbumId, int trackId, int userId);
+    Task DeleteFavouriteTrack(int collectionAlbumId, int trackId, int userId);
 }
 
 public class CollectionService(AppDbContext db, IMusicService musicService) : ICollectionService
@@ -56,7 +58,7 @@ public class CollectionService(AppDbContext db, IMusicService musicService) : IC
             .Where(ca => ca.CollectionId == collectionId && ca.AlbumId == albumId && ca.Collection.UserId == userId)
             .Include(ca => ca.Album)
                 .ThenInclude(a => a.Tracks)
-            .Include(ca => ca.FavouriteSongs)
+            .Include(ca => ca.FavouriteTracks)
             .FirstOrDefaultAsync()
                 ?? throw new NotFoundException("Album not found in collection");
 
@@ -129,6 +131,37 @@ public class CollectionService(AppDbContext db, IMusicService musicService) : IC
         if (request.Comment is not null)
             collectionAlbum.Comment = request.Comment;
 
+        await db.SaveChangesAsync();
+    }
+
+    public async Task AddFavouriteTrack(int collectionAlbumId, int trackId, int userId)
+    {
+        var collectionAlbum = await db.CollectionAlbums
+            .Include(ca => ca.FavouriteTracks)
+            .FirstOrDefaultAsync(ca => ca.Id == collectionAlbumId && ca.Collection.UserId == userId)
+                ?? throw new NotFoundException("No collectionAlbum found");
+
+        var existingTrack = collectionAlbum.FavouriteTracks.FirstOrDefault(fs => fs.TrackId == trackId);
+
+        if (existingTrack is null)
+            db.FavouriteTracks.Add(new FavouriteTrack { TrackId = trackId, CollectionAlbumId = collectionAlbumId });
+        else
+            throw new ConflictException("Track is already marked as favourite");
+
+        await db.SaveChangesAsync();
+    }
+
+    public async Task DeleteFavouriteTrack(int collectionAlbumId, int trackId, int userId)
+    {
+        var collectionAlbum = await db.CollectionAlbums
+            .Include(ca => ca.FavouriteTracks)
+            .FirstOrDefaultAsync(ca => ca.Id == collectionAlbumId && ca.Collection.UserId == userId)
+                ?? throw new NotFoundException("No collectionAlbum found");
+
+        var favouriteTrack = collectionAlbum.FavouriteTracks.FirstOrDefault(ft => ft.TrackId == trackId)
+            ?? throw new NotFoundException("No favourite track found");
+
+        collectionAlbum.FavouriteTracks.Remove(favouriteTrack);
         await db.SaveChangesAsync();
     }
 }
