@@ -14,6 +14,7 @@ public interface ICollectionService
     Task<CollectionDetailResponse> GetCollection(int collectionId, int userId);
     Task<CollectionAlbumDetailResponse> GetCollectionAlbum(int collectionId, int albumId, int userId);
     Task<CollectionDetailResponse> AddAlbum(int collectionId, AddAlbumRequest request, int userId);
+    Task DeleteAlbum(int collectionId, int albumId, int userId);
     Task UpdateCollectionAlbum(int collectionId, int albumId, UpdateCollectionAlbumRequest request, int userId);
     Task AddFavouriteTrack(int collectionAlbumId, int trackId, int userId);
     Task DeleteFavouriteTrack(int collectionAlbumId, int trackId, int userId);
@@ -117,6 +118,24 @@ public class CollectionService(AppDbContext db, IMusicService musicService) : IC
         await db.SaveChangesAsync();
 
         return CollectionMapper.ToDetail(collection);
+    }
+
+    public async Task DeleteAlbum(int collectionId, int albumId, int userId)
+    {
+        var collectionAlbum = await db.CollectionAlbums
+            .Include(ca => ca.Album)
+            .FirstOrDefaultAsync(ca => ca.CollectionId == collectionId && ca.AlbumId == albumId && ca.Collection.UserId == userId)
+                ?? throw new NotFoundException("No collectionAlbum found");
+
+        db.CollectionAlbums.Remove(collectionAlbum);
+        await db.SaveChangesAsync();
+
+        var albumStillInUse = await db.CollectionAlbums.AnyAsync(ca => ca.AlbumId == albumId);
+        if (!albumStillInUse)
+        {
+            db.Albums.Remove(collectionAlbum.Album);
+            await db.SaveChangesAsync();
+        }
     }
 
     public async Task UpdateCollectionAlbum(int collectionId, int albumId, UpdateCollectionAlbumRequest request, int userId)

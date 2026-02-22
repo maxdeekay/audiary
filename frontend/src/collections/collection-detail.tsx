@@ -1,11 +1,11 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { motion } from "motion/react";
-import { getCollection } from "@/api/collections";
+import { getCollection, deleteAlbumFromCollection } from "@/api/collections";
 import type { CollectionDetail as CollectionDetailType } from "./types";
 import AlbumCover from "@/search/album-cover";
 import { Spinner } from "@/components/ui/spinner";
-import { Star, ArrowUpDown, Check } from "lucide-react";
+import { Star, ArrowUpDown, Check, Minus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Drawer,
@@ -25,6 +25,8 @@ const sortLabels: Record<SortOption, string> = {
   "rating-asc": "Lowest Rated",
 };
 
+const LONG_PRESS_DURATION = 500;
+
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
   const navigate = useNavigate();
@@ -33,22 +35,27 @@ export default function CollectionDetail() {
   );
   const [isLoading, setIsLoading] = useState(true);
   const [sortOption, setSortOption] = useState<SortOption>("date-desc");
+  const [isEditMode, setIsEditMode] = useState(false);
+  const longPressTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const sortedAlbums = useMemo(() => {
-    if (!collection) return [];
-    return [...collection.albums].sort((a, b) => {
-      switch (sortOption) {
-        case "date-desc":
-          return new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime();
-        case "date-asc":
-          return new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime();
-        case "rating-desc":
-          return (b.rating ?? -1) - (a.rating ?? -1);
-        case "rating-asc":
-          return (a.rating ?? Infinity) - (b.rating ?? Infinity);
-      }
-    });
-  }, [collection, sortOption]);
+  const sortedAlbums = collection
+    ? [...collection.albums].sort((a, b) => {
+        switch (sortOption) {
+          case "date-desc":
+            return (
+              new Date(b.addedAt).getTime() - new Date(a.addedAt).getTime()
+            );
+          case "date-asc":
+            return (
+              new Date(a.addedAt).getTime() - new Date(b.addedAt).getTime()
+            );
+          case "rating-desc":
+            return (b.rating ?? -1) - (a.rating ?? -1);
+          case "rating-asc":
+            return (a.rating ?? Infinity) - (b.rating ?? Infinity);
+        }
+      })
+    : [];
 
   useEffect(() => {
     async function fetchCollection() {
@@ -62,6 +69,28 @@ export default function CollectionDetail() {
     }
     fetchCollection();
   }, [collectionId]);
+
+  const handlePressStart = () => {
+    longPressTimer.current = setTimeout(() => {
+      setIsEditMode(true);
+    }, LONG_PRESS_DURATION);
+  };
+
+  const handlePressEnd = () => {
+    if (longPressTimer.current) {
+      clearTimeout(longPressTimer.current);
+      longPressTimer.current = null;
+    }
+  };
+
+  const handleDelete = async (albumId: number) => {
+    setCollection((prev) =>
+      prev
+        ? { ...prev, albums: prev.albums.filter((a) => a.albumId !== albumId) }
+        : prev,
+    );
+    await deleteAlbumFromCollection(Number(collectionId), albumId);
+  };
 
   if (isLoading) {
     return (
@@ -80,14 +109,14 @@ export default function CollectionDetail() {
       transition={{ duration: 0.2 }}
       className="flex flex-col gap-2 mt-2"
     >
-      <h2 className="text-lg font-semibold ml-2">{collection.name}</h2>
-      <div className="flex items-center justify-between ml-2">
-        {collection.description ? (
-          <p className="text-sm text-muted-foreground">
+      <div className="flex items-center ml-2 mr-2">
+        <h2 className="text-lg font-semibold">{collection.name}</h2>
+      </div>
+      <div className="flex items-center justify-end ml-2">
+        {collection.description && (
+          <p className="text-sm text-muted-foreground mr-auto">
             {collection.description}
           </p>
-        ) : (
-          <div />
         )}
         {collection.albums.length > 0 && (
           <Drawer>
@@ -133,14 +162,36 @@ export default function CollectionDetail() {
         </p>
       )}
 
+      {isEditMode && (
+        <div className="fixed top-15 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+          <Button
+            variant="outline"
+            size="sm"
+            className="rounded-full px-5 shadow-md pointer-events-auto cursor-pointer"
+            onClick={() => setIsEditMode(false)}
+          >
+            Done
+          </Button>
+        </div>
+      )}
+
       <div className="flex flex-col gap-3">
         {sortedAlbums.map((album) => (
           <div
             key={album.id}
-            onClick={() =>
-              navigate(`/collections/${collectionId}/albums/${album.albumId}`)
-            }
-            className="flex gap-3 items-center rounded-lg border p-3 hover:bg-muted transition-colors cursor-pointer"
+            className="flex gap-3 items-center rounded-lg border p-3 transition-colors h-19"
+            onMouseDown={handlePressStart}
+            onMouseUp={handlePressEnd}
+            onMouseLeave={handlePressEnd}
+            onTouchStart={handlePressStart}
+            onTouchEnd={handlePressEnd}
+            onClick={() => {
+              if (!isEditMode) {
+                navigate(
+                  `/collections/${collectionId}/albums/${album.albumId}`,
+                );
+              }
+            }}
           >
             <AlbumCover src={album.coverUrl!} alt={album.title} />
             <div className="flex flex-col min-w-0">
@@ -151,18 +202,33 @@ export default function CollectionDetail() {
               </p>
             </div>
             <div className="ml-auto flex flex-col gap-2 items-end justify-start shrink-0">
-              {album.rating !== null && (
-                <div className="flex gap-2 items-center">
-                  <span className="font-medium">
-                    {album.rating?.toFixed(1)}
-                  </span>
-                  <Star className="size-6 fill-amber-300 text-amber-300" />
-                </div>
-              )}
-              {album.genre && (
-                <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
-                  {album.genre.charAt(0).toUpperCase() + album.genre.slice(1)}
-                </span>
+              {isEditMode ? (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(album.albumId);
+                  }}
+                  className="size-6 rounded-full bg-destructive flex items-center justify-center cursor-pointer"
+                >
+                  <Minus className="size-4 text-white" />
+                </button>
+              ) : (
+                <>
+                  {album.rating !== null && (
+                    <div className="flex gap-2 items-center">
+                      <span className="font-medium">
+                        {album.rating?.toFixed(1)}
+                      </span>
+                      <Star className="size-6 fill-amber-300 text-amber-300" />
+                    </div>
+                  )}
+                  {album.genre && (
+                    <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full">
+                      {album.genre.charAt(0).toUpperCase() +
+                        album.genre.slice(1)}
+                    </span>
+                  )}
+                </>
               )}
             </div>
           </div>

@@ -53,6 +53,14 @@ public class CollectionController(ICollectionService collectionService) : Contro
         return await collectionService.AddAlbum(collectionId, request, userId);
     }
 
+    [HttpDelete("{collectionId}/albums/{albumId}")]
+    public async Task<IActionResult> DeleteAlbum(int collectionId, int albumId)
+    {
+        var userId = User.GetUserId();
+        await collectionService.DeleteAlbum(collectionId, albumId, userId);
+        return NoContent();
+    }
+
     [HttpPost("{collectionAlbumId}/favourites/{trackId}")]
     public async Task<IActionResult> AddFavouriteTrack(int collectionAlbumId, int trackId)
     {

@@ -51,6 +51,13 @@ export async function addAlbumToCollection(
   );
 }
 
+export async function deleteAlbumFromCollection(
+  collectionId: number,
+  albumId: number,
+) {
+  return remove<void>(`/api/collections/${collectionId}/albums/${albumId}`);
+}
+
 export async function addFavouriteTrack(
   collectionAlbumId: number,
   trackId: number,
