@@ -25,7 +25,7 @@ const sortLabels: Record<SortOption, string> = {
   "rating-asc": "Lowest Rated",
 };
 
-const LONG_PRESS_DURATION = 500;
+const LONG_PRESS_DURATION = 1000;
 
 export default function CollectionDetail() {
   const { collectionId } = useParams<{ collectionId: string }>();
@@ -163,7 +163,7 @@ export default function CollectionDetail() {
       )}
 
       {isEditMode && (
-        <div className="fixed top-15 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
+        <div className="fixed bottom-25 left-1/2 -translate-x-1/2 z-50 pointer-events-none">
           <Button
             variant="outline"
             size="sm"
@@ -179,12 +179,13 @@ export default function CollectionDetail() {
         {sortedAlbums.map((album) => (
           <div
             key={album.id}
-            className="flex gap-3 items-center rounded-lg border p-3 transition-colors h-19"
+            className="flex gap-3 items-center rounded-lg border p-3 transition-colors h-19 cursor-pointer hover:bg-muted"
             onMouseDown={handlePressStart}
             onMouseUp={handlePressEnd}
             onMouseLeave={handlePressEnd}
             onTouchStart={handlePressStart}
             onTouchEnd={handlePressEnd}
+            onTouchMove={handlePressEnd}
             onClick={() => {
               if (!isEditMode) {
                 navigate(
