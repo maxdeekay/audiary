@@ -41,6 +41,11 @@ export default function Search() {
         <Input
           className="pl-9"
           placeholder="Search albums and artists..."
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          autoComplete="off"
+          inputMode="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           autoFocus
