@@ -9,12 +9,12 @@ namespace Users.Controllers;
 public class UserController(IUserService userService) : ControllerBase
 {
 
-    [HttpPost("register")]
-    [AllowAnonymous]
-    public async Task<AuthResponse> Create(AuthRequest request)
-    {
-        return await userService.Create(request);
-    }
+    // [HttpPost("register")]
+    // [AllowAnonymous]
+    // public async Task<AuthResponse> Create(AuthRequest request)
+    // {
+    //     return await userService.Create(request);
+    // }
 
     [HttpPost("login")]
     [AllowAnonymous]

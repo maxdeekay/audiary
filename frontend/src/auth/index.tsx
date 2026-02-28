@@ -28,7 +28,7 @@ export default function Auth() {
         {currentForm === "login" ? <LoginForm /> : <SignUpForm />}
       </div>
 
-      <p>
+      {/*<p>
         {currentForm === "login"
           ? "Don't have an account?"
           : "Already have an account?"}{" "}
@@ -41,7 +41,7 @@ export default function Auth() {
         >
           {currentForm === "login" ? "Sign up" : "Log in"}
         </button>
-      </p>
+      </p>*/}
     </div>
   );
 }
