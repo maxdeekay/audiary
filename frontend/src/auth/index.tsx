@@ -5,7 +5,7 @@ import { isAuthenticated } from "@/lib/auth";
 import { Navigate, useSearchParams } from "react-router-dom";
 
 export default function Auth() {
-  const [currentForm, setCurrentForm] = useState<"login" | "sign-up">("login");
+  const [currentForm] = useState<"login" | "sign-up">("login"); // setCurrentForm
   const [searchParams] = useSearchParams();
 
   const expired = searchParams.get("expired") === "true";
