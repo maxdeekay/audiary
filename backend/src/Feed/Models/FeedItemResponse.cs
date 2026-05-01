@@ -9,17 +9,20 @@ public class FeedItemResponse
     public required int UserId { get; set; }
     public required string Username { get; set; }
 
-    public int CollectionId { get; set; }
-    public required string CollectionName { get; set; }
+    public int? CollectionId { get; set; }
+    public string? CollectionName { get; set; }
 
-    public int CollectionAlbumId { get; set; }
+    public int? CollectionAlbumId { get; set; }
 
-    public int AlbumId { get; set; }
-    public required string AlbumTitle { get; set; }
-    public required string AlbumArtist { get; set; }
+    public int? AlbumId { get; set; }
+    public string? AlbumTitle { get; set; }
+    public string? AlbumArtist { get; set; }
     public string? AlbumCoverUrl { get; set; }
-    public int ReleaseYear { get; set; }
+    public int? ReleaseYear { get; set; }
 
     public decimal? Rating { get; set; }
     public string? Comment { get; set; }
+
+    public int? TargetUserId { get; set; }
+    public string? TargetUsername { get; set; }
 }

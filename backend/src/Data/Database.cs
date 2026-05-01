@@ -22,7 +22,7 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
         modelBuilder.Entity<User>().HasIndex(u => u.Username).IsUnique();
         modelBuilder.Entity<User>().HasIndex(u => u.Email).IsUnique();
         modelBuilder.Entity<Album>().HasIndex(a => a.MusicBrainzId).IsUnique();
-        modelBuilder.Entity<Follow>().HasIndex(f => new { f.FollowerId, f.FollowingId }).IsUnique();
+        modelBuilder.Entity<Follow>().HasKey(f => new { f.FollowerId, f.FollowingId });
 
         modelBuilder.Entity<Follow>()
             .HasOne(f => f.Follower)
@@ -35,5 +35,27 @@ public class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(op
             .WithMany()
             .HasForeignKey(f => f.FollowingId)
             .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<ActivityEvent>()
+            .HasOne(ae => ae.CollectionAlbum)
+            .WithMany()
+            .HasForeignKey(ae => ae.CollectionAlbumId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ActivityEvent>()
+            .HasOne(ae => ae.TargetUser)
+            .WithMany()
+            .HasForeignKey(ae => ae.TargetUserId)
+            .OnDelete(DeleteBehavior.Cascade);
+
+        modelBuilder.Entity<ActivityEvent>()
+            .HasIndex(ae => new { ae.CollectionAlbumId, ae.Type })
+            .IsUnique()
+            .HasFilter("\"CollectionAlbumId\" IS NOT NULL");
+
+        modelBuilder.Entity<ActivityEvent>()
+            .HasIndex(ae => new { ae.UserId, ae.TargetUserId, ae.Type })
+            .IsUnique()
+            .HasFilter("\"TargetUserId\" IS NOT NULL");
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Exceptions;
 using Auth;
 using Data;
+using Feed;
 
 namespace Users;
 
@@ -77,24 +78,52 @@ public class UserService(AppDbContext db, IJwtService jwtService) : IUserService
         if (!targetExists)
             throw new NotFoundException("User not found");
 
+        var now = DateTime.UtcNow;
+
         var alreadyFollowing = await db.Follows.AnyAsync(f => f.FollowerId == userId && f.FollowingId == targetUserId);
-        if (alreadyFollowing)
-            return;
-
-        var follow = new Follow
+        if (!alreadyFollowing)
         {
-            FollowerId = userId,
-            FollowingId = targetUserId,
-            CreatedAt = DateTime.UtcNow
-        };
+            db.Follows.Add(new Follow
+            {
+                FollowerId = userId,
+                FollowingId = targetUserId,
+                CreatedAt = now
+            });
+        }
 
-        db.Follows.Add(follow);
+        var existingEvent = await db.ActivityEvents.FirstOrDefaultAsync(ae =>
+            ae.UserId == userId
+            && ae.TargetUserId == targetUserId
+            && ae.Type == ActivityEventType.StartedFollowing);
+
+        if (existingEvent is null)
+        {
+            db.ActivityEvents.Add(new ActivityEvent
+            {
+                UserId = userId,
+                TargetUserId = targetUserId,
+                Type = ActivityEventType.StartedFollowing,
+                CreatedAt = now,
+            });
+        }
+        else
+        {
+            existingEvent.CreatedAt = now;
+        }
+
         await db.SaveChangesAsync();
     }
 
     public async Task UnFollow(int userId, int targetUserId)
     {
-        // TODO
+        var follow = await db.Follows.FirstOrDefaultAsync(f =>
+            f.FollowerId == userId && f.FollowingId == targetUserId);
+
+        if (follow is null)
+            return;
+
+        db.Follows.Remove(follow);
+        await db.SaveChangesAsync();
     }
 
     public async Task<List<UserSummaryResponse>> GetFollowing(int userId)

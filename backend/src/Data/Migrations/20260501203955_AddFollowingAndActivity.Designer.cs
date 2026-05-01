@@ -3,6 +3,7 @@ using System;
 using Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace backend.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260501203955_AddFollowingAndActivity")]
+    partial class AddFollowingAndActivity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -184,7 +187,7 @@ namespace backend.Migrations
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("CollectionAlbumId")
+                    b.Property<int>("CollectionAlbumId")
                         .HasColumnType("integer");
 
                     b.Property<string>("Comment")
@@ -196,9 +199,6 @@ namespace backend.Migrations
                     b.Property<decimal?>("Rating")
                         .HasColumnType("numeric");
 
-                    b.Property<int?>("TargetUserId")
-                        .HasColumnType("integer");
-
                     b.Property<int>("Type")
                         .HasColumnType("integer");
 
@@ -207,15 +207,9 @@ namespace backend.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TargetUserId");
+                    b.HasIndex("CollectionAlbumId");
 
-                    b.HasIndex("CollectionAlbumId", "Type")
-                        .IsUnique()
-                        .HasFilter("\"CollectionAlbumId\" IS NOT NULL");
-
-                    b.HasIndex("UserId", "TargetUserId", "Type")
-                        .IsUnique()
-                        .HasFilter("\"TargetUserId\" IS NOT NULL");
+                    b.HasIndex("UserId");
 
                     b.ToTable("ActivityEvents");
                 });
@@ -339,12 +333,8 @@ namespace backend.Migrations
                     b.HasOne("Collections.CollectionAlbum", "CollectionAlbum")
                         .WithMany()
                         .HasForeignKey("CollectionAlbumId")
-                        .OnDelete(DeleteBehavior.Cascade);
-
-                    b.HasOne("Users.User", "TargetUser")
-                        .WithMany()
-                        .HasForeignKey("TargetUserId")
-                        .OnDelete(DeleteBehavior.Cascade);
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Users.User", "User")
                         .WithMany()
@@ -353,8 +343,6 @@ namespace backend.Migrations
                         .IsRequired();
 
                     b.Navigation("CollectionAlbum");
-
-                    b.Navigation("TargetUser");
 
                     b.Navigation("User");
                 });
