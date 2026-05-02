@@ -53,9 +53,7 @@ export default function PeopleTab() {
       }
     } catch {
       setResults((prev) =>
-        prev.map((u) =>
-          u.id === user.id ? { ...u, isFollowing: !next } : u,
-        ),
+        prev.map((u) => (u.id === user.id ? { ...u, isFollowing: !next } : u)),
       );
     } finally {
       setPendingIds((prev) => {
@@ -113,15 +111,21 @@ export default function PeopleTab() {
                 <User className="size-5 text-muted-foreground" />
               </div>
               <p className="font-medium truncate">{user.username}</p>
-              <Button
-                variant={user.isFollowing ? "ghost" : "outline"}
-                size="sm"
-                className="ml-auto shrink-0 cursor-pointer"
-                disabled={pendingIds.has(user.id)}
-                onClick={() => toggleFollow(user)}
-              >
-                {user.isFollowing ? "Following" : "Follow"}
-              </Button>
+              {!user.isFollowing ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="ml-auto shrink-0 cursor-pointer"
+                  disabled={pendingIds.has(user.id)}
+                  onClick={() => toggleFollow(user)}
+                >
+                  {user.isFollowing ? "Unfollow" : "Follow"}
+                </Button>
+              ) : (
+                <p className="ml-auto shrink-0 text-sm text-muted-foreground">
+                  Following
+                </p>
+              )}
             </div>
           ))}
         </div>

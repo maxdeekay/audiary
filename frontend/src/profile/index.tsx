@@ -2,11 +2,7 @@ import { useEffect, useState } from "react";
 import { User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import {
-  getFollowing,
-  unfollowUser,
-  type UserSummary,
-} from "@/api/users";
+import { getFollowing, unfollowUser, type UserSummary } from "@/api/users";
 
 export default function Profile() {
   const [following, setFollowing] = useState<UserSummary[]>([]);
@@ -81,7 +77,7 @@ export default function Profile() {
             </div>
             <p className="font-medium truncate">{user.username}</p>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               className="ml-auto shrink-0 cursor-pointer"
               disabled={pendingIds.has(user.id)}

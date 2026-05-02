@@ -1,11 +1,11 @@
-import { useState } from "react";
+// import { useState } from "react";
 import LoginForm from "./login-form";
-import SignUpForm from "./sign-up-form";
+// import SignUpForm from "./sign-up-form";
 import { isAuthenticated } from "@/lib/auth";
 import { Navigate, useSearchParams } from "react-router-dom";
 
 export default function Auth() {
-  const [currentForm, setCurrentForm] = useState<"login" | "sign-up">("login");
+  // const [currentForm, setCurrentForm] = useState<"login" | "sign-up">("login");
   const [searchParams] = useSearchParams();
 
   const expired = searchParams.get("expired") === "true";
@@ -25,10 +25,11 @@ export default function Auth() {
       <h2 className="text-4xl">audiary</h2>
 
       <div className="w-full max-w-80">
-        {currentForm === "login" ? <LoginForm /> : <SignUpForm />}
+        <LoginForm />
+        {/* {currentForm === "login" ? <LoginForm /> : <SignUpForm />} */}
       </div>
 
-      <p>
+      {/* <p>
         {currentForm === "login"
           ? "Don't have an account?"
           : "Already have an account?"}{" "}
@@ -41,7 +42,7 @@ export default function Auth() {
         >
           {currentForm === "login" ? "Sign up" : "Log in"}
         </button>
-      </p>
+      </p> */}
     </div>
   );
 }
