@@ -9,6 +9,7 @@ using Auth;
 using Users;
 using Music;
 using Collections;
+using Feed;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,6 +20,7 @@ builder.Services.AddDbContext<AppDbContext>(options => options.UseNpgsql(builder
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICollectionService, CollectionService>();
+builder.Services.AddScoped<IFeedService, FeedService>();
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddTransient<ThrottlingHandler>();
 builder.Services.AddHttpClient<IMusicService, MusicService>(client =>

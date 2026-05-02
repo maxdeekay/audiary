@@ -4,6 +4,7 @@ using Data;
 using Albums;
 using Music;
 using Users;
+using Feed;
 
 namespace Collections;
 
@@ -115,6 +116,15 @@ public class CollectionService(AppDbContext db, IMusicService musicService) : IC
         };
 
         collection.Albums.Add(collectionAlbum);
+
+        db.ActivityEvents.Add(new ActivityEvent
+        {
+            UserId = userId,
+            Type = ActivityEventType.AlbumAdded,
+            CollectionAlbum = collectionAlbum,
+            CreatedAt = DateTime.UtcNow,
+        });
+
         await db.SaveChangesAsync();
 
         return CollectionMapper.ToDetail(collection);
@@ -144,13 +154,54 @@ public class CollectionService(AppDbContext db, IMusicService musicService) : IC
             .FirstOrDefaultAsync(ca => ca.CollectionId == collectionId && ca.AlbumId == albumId && ca.Collection.UserId == userId)
                 ?? throw new NotFoundException("Album not found in collection");
 
-        if (request.Rating is not null)
-            collectionAlbum.Rating = request.Rating;
+        var now = DateTime.UtcNow;
 
-        if (request.Comment is not null)
+        if (request.Rating is not null && request.Rating != collectionAlbum.Rating)
+        {
+            collectionAlbum.Rating = request.Rating;
+            await UpsertActivityEvent(userId, collectionAlbum.Id, ActivityEventType.RatingChanged, now,
+                rating: request.Rating);
+        }
+
+        if (request.Comment is not null && request.Comment != collectionAlbum.Comment)
+        {
             collectionAlbum.Comment = request.Comment;
+            await UpsertActivityEvent(userId, collectionAlbum.Id, ActivityEventType.CommentChanged, now,
+                comment: request.Comment);
+        }
 
         await db.SaveChangesAsync();
+    }
+
+    private async Task UpsertActivityEvent(
+        int userId,
+        int collectionAlbumId,
+        ActivityEventType type,
+        DateTime now,
+        decimal? rating = null,
+        string? comment = null)
+    {
+        var existing = await db.ActivityEvents
+            .FirstOrDefaultAsync(ae => ae.CollectionAlbumId == collectionAlbumId && ae.Type == type);
+
+        if (existing is null)
+        {
+            db.ActivityEvents.Add(new ActivityEvent
+            {
+                UserId = userId,
+                Type = type,
+                CollectionAlbumId = collectionAlbumId,
+                Rating = rating,
+                Comment = comment,
+                CreatedAt = now,
+            });
+        }
+        else
+        {
+            existing.Rating = rating;
+            existing.Comment = comment;
+            existing.CreatedAt = now;
+        }
     }
 
     public async Task AddFavouriteTrack(int collectionAlbumId, int trackId, int userId)

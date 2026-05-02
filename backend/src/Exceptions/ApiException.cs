@@ -5,6 +5,11 @@ public abstract class ApiException(string message) : Exception(message)
     public abstract int StatusCode { get; }
 }
 
+public class BadRequestException(string message) : ApiException(message)
+{
+    public override int StatusCode => 400;
+}
+
 public class ConflictException(string message) : ApiException(message)
 {
     public override int StatusCode => 409;
